@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ScheduledTask {
-    private WeatherDataService weatherDataService;
+    private final WeatherDataService weatherDataService;
 
     public ScheduledTask(WeatherDataService weatherDataService){
         this.weatherDataService = weatherDataService;
