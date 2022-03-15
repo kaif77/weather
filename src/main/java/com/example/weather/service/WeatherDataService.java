@@ -94,6 +94,14 @@ public class WeatherDataService {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println(getDate());
+    }
+
+//    deleting weatherData
+    void deleteWeatherData(String city,String country_code){
+        List<WeatherData> weatherData = this.weatherDataRepository.getActiveWeatherData(city,country_code);
+        for (int i=0;i<weatherData.size();i++){
+            weatherData.get(i).setArchived(true);
+            this.weatherDataRepository.save(weatherData.get(i));
+        }
     }
 }
