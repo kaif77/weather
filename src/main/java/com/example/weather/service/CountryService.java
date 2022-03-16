@@ -9,14 +9,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
 public class CountryService {
-    private final CountryRepository countryRepository;
-    private final WeatherDataService weatherDataService;
+    private CountryRepository countryRepository;
+    private WeatherDataService weatherDataService;
 
     public CountryService(CountryRepository countryRepository, WeatherDataService weatherDataService){
         this.countryRepository = countryRepository;
@@ -24,7 +22,7 @@ public class CountryService {
     }
 
 //    creating new country based on latitude and longitude
-    public ResponseEntity<?> createCountry(double ulat, double ulon){
+    public ResponseEntity<String> createCountry(double ulat, double ulon){
         final String uri = "https://api.openweathermap.org/data/2.5/weather";
         String APPID = "d9b1616ce8363168c45c25a1f0679340";
 
@@ -48,15 +46,17 @@ public class CountryService {
             }
 //            when user add the same country
             else {
-                return ResponseEntity.status(200).body(new MessageResponse("Country Already Added"));
+                return ResponseEntity.ok("Country Already Added");
             }
         }
 //        if a new country or activating an existing country get weather data for that country
         String para = jsonObject.getString("name")+','+jsonObject.getJSONObject("sys").getString("country");
         JSONObject jsonObject1 = this.weatherDataService.callOpenWeather(para);
         this.weatherDataService.setWeatherData(jsonObject1);
-        return ResponseEntity.status(200).body(new MessageResponse("Successfully Added"));
+        return ResponseEntity.ok(("Successfully Added"));
     }
+
+
 
 //    returning sorted country list
     public List<CountryImpl> getActiveCountry(){
@@ -64,7 +64,7 @@ public class CountryService {
     }
 
 //    deleting a country from user view
-    public ResponseEntity<?> deleteCountry(Long id){
+    public ResponseEntity<String> deleteCountry(Long id){
         Country country = this.countryRepository.findById(id).orElseThrow(null);
         System.out.println(country);
         if(country != null){
@@ -72,10 +72,10 @@ public class CountryService {
             country.setArchived(true);
             this.countryRepository.save(country);
             this.weatherDataService.deleteWeatherData(country.getName(),country.getCountryCode());
-            return ResponseEntity.status(200).body(new MessageResponse("Country Deleted"));
+            return ResponseEntity.ok("Country Deleted");
         }
         else {
-            return ResponseEntity.status(404).body(new MessageResponse("Country Not Found"));
+            return ResponseEntity.ok("Country Not Found");
         }
     }
 }

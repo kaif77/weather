@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 public class WeatherDataController {
-    private final WeatherDataService weatherDataService;
+    private WeatherDataService weatherDataService;
 
     public WeatherDataController(WeatherDataService weatherDataService) {
         this.weatherDataService = weatherDataService;

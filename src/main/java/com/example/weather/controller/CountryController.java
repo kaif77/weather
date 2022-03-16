@@ -12,14 +12,14 @@ import java.util.List;
 
 @RestController
 public class CountryController {
-    private final CountryService countryService;
+    private CountryService countryService;
 
     public CountryController(CountryService countryService){
         this.countryService = countryService;
     }
 
     @PostMapping(path ="/create-country")
-    public ResponseEntity<?> createCountry(double lan, double lon){
+    public ResponseEntity<String> createCountry(double lan, double lon){
         return this.countryService.createCountry(lan, lon);
     }
 
@@ -29,7 +29,7 @@ public class CountryController {
     }
 
     @PutMapping(path ="/delete-country")
-    public ResponseEntity<?> getCountries(Long id){
+    public ResponseEntity<String> getCountries(Long id){
         return this.countryService.deleteCountry(id);
     }
 }
