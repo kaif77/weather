@@ -1,7 +1,6 @@
 package com.example.weather.service;
 
 import com.example.weather.model.Country;
-import com.example.weather.payload.MessageResponse;
 import com.example.weather.repository.CountryRepository;
 import com.example.weather.service.impl.CountryImpl;
 import org.json.JSONObject;
@@ -13,8 +12,8 @@ import java.util.List;
 
 @Service
 public class CountryService {
-    private CountryRepository countryRepository;
-    private WeatherDataService weatherDataService;
+    private final CountryRepository countryRepository;
+    private final WeatherDataService weatherDataService;
 
     public CountryService(CountryRepository countryRepository, WeatherDataService weatherDataService){
         this.countryRepository = countryRepository;
@@ -29,6 +28,9 @@ public class CountryService {
         RestTemplate restTemplate = new RestTemplate();
         String result = restTemplate.getForObject(uri + "?lat=" + ulat +"&lon="+ulon+ "&APPID=" + APPID, String.class);
         JSONObject jsonObject = new JSONObject(result);
+        if(!jsonObject.has("country")){
+            return ResponseEntity.ok("City Not Found");
+        }
         Long countryId = jsonObject.getLong("id");
         Country countryAvailable = this.countryRepository.findById(jsonObject.getLong("id")).orElse(null);
 //        if country is not added in database
@@ -46,7 +48,7 @@ public class CountryService {
             }
 //            when user add the same country
             else {
-                return ResponseEntity.ok("Country Already Added");
+                return ResponseEntity.ok("City Already Added");
             }
         }
 //        if a new country or activating an existing country get weather data for that country
@@ -66,9 +68,7 @@ public class CountryService {
 //    deleting a country from user view
     public ResponseEntity<String> deleteCountry(Long id){
         Country country = this.countryRepository.findById(id).orElseThrow(null);
-        System.out.println(country);
         if(country != null){
-            System.out.println(country);
             country.setArchived(true);
             this.countryRepository.save(country);
             this.weatherDataService.deleteWeatherData(country.getName(),country.getCountryCode());
