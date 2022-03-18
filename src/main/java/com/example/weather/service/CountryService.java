@@ -28,8 +28,9 @@ public class CountryService {
         RestTemplate restTemplate = new RestTemplate();
         String result = restTemplate.getForObject(uri + "?lat=" + ulat +"&lon="+ulon+ "&APPID=" + APPID, String.class);
         JSONObject jsonObject = new JSONObject(result);
-        if(!jsonObject.has("country")){
-            return ResponseEntity.ok("City Not Found");
+        System.out.println();
+        if(jsonObject.getString("name").trim().equals("")){
+            return ResponseEntity.ok("No Cities in the given Coordinates");
         }
         Long countryId = jsonObject.getLong("id");
         Country countryAvailable = this.countryRepository.findById(jsonObject.getLong("id")).orElse(null);
@@ -72,10 +73,10 @@ public class CountryService {
             country.setArchived(true);
             this.countryRepository.save(country);
             this.weatherDataService.deleteWeatherData(country.getName(),country.getCountryCode());
-            return ResponseEntity.ok("Country Deleted");
+            return ResponseEntity.ok("City is Deleted");
         }
         else {
-            return ResponseEntity.ok("Country Not Found");
+            return ResponseEntity.ok("City Not Found");
         }
     }
 }
